@@ -3,7 +3,6 @@
 Los estudiantes se registran, consultan las tutorías disponibles y se inscriben. Los tutores publican
 y administran sus tutorías; el administrador gestiona catálogos, usuarios e inscripciones.
 
-Universidad de El Salvador · Facultad Multidisciplinaria de Occidente · Ingeniería en Desarrollo de Software
 
 ## Estructura
 - `backend/sigtau` – API REST (Spring Boot 3.5, Java 21, JPA, PostgreSQL, JWT)
