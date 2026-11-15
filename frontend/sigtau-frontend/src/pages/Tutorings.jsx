@@ -4,9 +4,12 @@ import Banner from "../components/Banner";
 import { getTutorings } from "../services/tutoringService";
 import { enroll } from "../services/enrollmentService";
 import { fmtTime } from "../utils/format";
+import { canEnroll, hasTutoringStarted } from "../utils/tutoringAvailability";
+import useNow from "../hooks/useNow";
 
 /** Catálogo de tutorías. El estudiante puede inscribirse desde aquí. */
 function Tutorings() {
+    const now = useNow();
     const role = localStorage.getItem("role");
     const [items, setItems] = useState([]);
     const [q, setQ] = useState("");
@@ -25,6 +28,7 @@ function Tutorings() {
     useEffect(() => { load(); }, [load]);
 
     const handleEnroll = async (t) => {
+        if (!canEnroll(t) || busy !== null) return;
         setBusy(t.id);
         try {
             await enroll(t.id);
@@ -38,7 +42,7 @@ function Tutorings() {
     };
 
     const visible = items.filter((t) => {
-        const open = t.status === "OPEN" && t.availableSpots > 0;
+        const open = canEnroll(t, now);
         const text = [t.title, t.subjectName, t.careerName, t.tutorName].join(" ").toLowerCase();
         return (!onlyOpen || open) && text.includes(q.toLowerCase());
     });
@@ -63,7 +67,7 @@ function Tutorings() {
                         <div className="form-check">
                             <input id="onlyOpen" type="checkbox" className="form-check-input"
                                 checked={onlyOpen} onChange={(e) => setOnlyOpen(e.target.checked)} />
-                            <label htmlFor="onlyOpen" className="form-check-label">Solo con cupos disponibles</label>
+                            <label htmlFor="onlyOpen" className="form-check-label">Solo próximas con cupos disponibles</label>
                         </div>
                     </div>
                 </div>
@@ -75,14 +79,15 @@ function Tutorings() {
                         {visible.map((t) => {
                             const full = t.availableSpots <= 0;
                             const closed = t.status !== "OPEN";
+                            const started = hasTutoringStarted(t, now);
                             return (
                                 <div className="col" key={t.id}>
                                     <div className="card h-100 shadow-sm">
                                         <div className="card-body">
                                             <div className="d-flex justify-content-between">
                                                 <span className="badge bg-secondary">{t.modalityName}</span>
-                                                <span className={`badge ${closed || full ? "bg-danger" : "bg-success"}`}>
-                                                    {closed ? "Cerrada" : full ? "Sin cupos" : `${t.availableSpots} cupos`}
+                                                <span className={`badge ${closed || full || started ? "bg-danger" : "bg-success"}`}>
+                                                    {started ? "Iniciada o finalizada" : closed ? "Cerrada" : full ? "Sin cupos" : `${t.availableSpots} cupos`}
                                                 </span>
                                             </div>
                                             <h5 className="card-title text-primary mt-2">{t.title}</h5>
@@ -102,7 +107,7 @@ function Tutorings() {
                                                 ) : (
                                                     <button
                                                         className="btn btn-primary w-100"
-                                                        disabled={closed || full || busy === t.id}
+                                                        disabled={!canEnroll(t, now) || busy !== null}
                                                         onClick={() => handleEnroll(t)}
                                                     >
                                                         {busy === t.id ? "Inscribiendo..." : "Inscribirme"}

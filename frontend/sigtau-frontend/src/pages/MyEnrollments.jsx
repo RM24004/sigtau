@@ -4,14 +4,18 @@ import Banner from "../components/Banner";
 import { getMyEnrollments, cancelEnrollment } from "../services/enrollmentService";
 import { getReasons } from "../services/reasonService";
 import { fmtTime } from "../utils/format";
+import { hasTutoringStarted } from "../utils/tutoringAvailability";
+import useNow from "../hooks/useNow";
 
 /** Inscripciones del estudiante autenticado, con opción de cancelar. */
 function MyEnrollments() {
+    const now = useNow();
     const [items, setItems] = useState([]);
     const [reasons, setReasons] = useState([]);
     const [target, setTarget] = useState(null);
     const [reasonId, setReasonId] = useState("");
     const [msg, setMsg] = useState(null);
+    const [busy, setBusy] = useState(false);
 
     const load = useCallback(() => getMyEnrollments()
         .then(setItems)
@@ -23,6 +27,13 @@ function MyEnrollments() {
     }, [load]);
 
     const confirmCancel = async () => {
+        if (busy || !target) return;
+        if (hasTutoringStarted(target)) {
+            setMsg({ type: "warning", text: "La tutoría ya comenzó; no puedes cancelar la inscripción." });
+            setTarget(null);
+            return;
+        }
+        setBusy(true);
         try {
             await cancelEnrollment(target.id, reasonId ? Number(reasonId) : null);
             setMsg({ type: "success", text: "Inscripción cancelada" });
@@ -31,6 +42,8 @@ function MyEnrollments() {
             await load();
         } catch (e) {
             setMsg({ type: "danger", text: e.message });
+        } finally {
+            setBusy(false);
         }
     };
 
@@ -49,8 +62,9 @@ function MyEnrollments() {
                                 <option value="">Motivo (opcional)</option>
                                 {reasons.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}
                             </select>
-                            <button className="btn btn-danger me-2" onClick={confirmCancel}>Confirmar cancelación</button>
-                            <button className="btn btn-outline-secondary" onClick={() => setTarget(null)}>Volver</button>
+                            {hasTutoringStarted(target, now) && <p className="text-danger">La tutoría ya comenzó; no puedes cancelar la inscripción.</p>}
+                            <button className="btn btn-danger me-2" disabled={busy || hasTutoringStarted(target, now)} onClick={confirmCancel}>{busy ? "Cancelando..." : "Confirmar cancelación"}</button>
+                            <button className="btn btn-outline-secondary" disabled={busy} onClick={() => setTarget(null)}>Volver</button>
                         </div>
                     </div>
                 )}
@@ -81,11 +95,12 @@ function MyEnrollments() {
                                             {e.reasonName && <div className="small text-muted">{e.reasonName}</div>}
                                         </td>
                                         <td>
-                                            {e.status === "ACTIVE" && (
-                                                <button className="btn btn-outline-danger btn-sm" onClick={() => setTarget(e)}>
+                                            {e.status === "ACTIVE" && !hasTutoringStarted(e, now) && (
+                                                <button className="btn btn-outline-danger btn-sm" disabled={busy} onClick={() => { setTarget(e); setReasonId(""); }}>
                                                     Cancelar
                                                 </button>
                                             )}
+                                            {e.status === "ACTIVE" && hasTutoringStarted(e, now) && <span className="text-muted small">Plazo de cancelación finalizado</span>}
                                         </td>
                                     </tr>
                                 ))}
