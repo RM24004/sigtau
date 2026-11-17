@@ -71,3 +71,10 @@ Consultar [la guía de integración y pruebas](docs/ENTREGA_GERSON.md).
 - Frontend: `cd frontend/sigtau-frontend && npm ci && npm run lint && npm run build`.
 - Interfaz: `npx playwright install chromium && npm run test:e2e` desde el frontend.
 - `.github/workflows/verify.yml` comprueba backend con PostgreSQL de prueba y frontend al subir cambios.
+
+## Entrega final (20 de noviembre de 2026)
+
+[Plan de entrega, pruebas, conversión, riesgos e IA propuesta](docs/PLAN_ENTREGA_FINAL.md).
+[Resultados de la revisión actual](docs/VERIFICACION_2026-11-15.md).
+
+Las pruebas de disponibilidad del frontend se ejecutan con `npm run test:unit`.
