@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { clearSession, homeFor } from "../utils/auth";
+import "./Navbar.css";
 
 const MENU = {
     STUDENT: [
@@ -25,6 +27,7 @@ const ROLE_LABEL = { STUDENT: "Estudiante", TUTOR: "Tutor", ADMIN: "Administrado
 
 function Navbar() {
     const navigate = useNavigate();
+    const [open, setOpen] = useState(false);
     const role = localStorage.getItem("role");
     const name = localStorage.getItem("name") || localStorage.getItem("email");
 
@@ -34,36 +37,52 @@ function Navbar() {
     };
 
     return (
-        <nav className="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
-            <div className="container">
-                <NavLink className="navbar-brand fw-bold" to={homeFor(role)}>SIGTAU</NavLink>
+        <header className="nav">
+            <div className="nav__inner">
+                <NavLink className="nav__brand" to={homeFor(role)} onClick={() => setOpen(false)}>
+                    SIGTAU
+                </NavLink>
 
                 <button
-                    className="navbar-toggler"
                     type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#navbarNav"
-                    aria-label="Mostrar menú"
+                    className="nav__toggle"
+                    aria-label={open ? "Cerrar menú" : "Abrir menú"}
+                    aria-expanded={open}
+                    aria-controls="nav-panel"
+                    onClick={() => setOpen(!open)}
                 >
-                    <span className="navbar-toggler-icon"></span>
+                    <span className="nav__bars" aria-hidden="true"></span>
                 </button>
 
-                <div className="collapse navbar-collapse" id="navbarNav">
-                    <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+                <nav
+                    id="nav-panel"
+                    className={open ? "nav__panel nav__panel--open" : "nav__panel"}
+                    aria-label="Principal"
+                >
+                    <ul className="nav__links">
                         {(MENU[role] || []).map(([label, path]) => (
-                            <li className="nav-item" key={path}>
-                                <NavLink className="nav-link" to={path}>{label}</NavLink>
+                            <li key={path}>
+                                <NavLink
+                                    className="nav__link"
+                                    to={path}
+                                    onClick={() => setOpen(false)}
+                                >
+                                    {label}
+                                </NavLink>
                             </li>
                         ))}
                     </ul>
 
-                    <span className="navbar-text me-3">
-                        {name} <span className="badge bg-light text-primary ms-1">{ROLE_LABEL[role] || role}</span>
-                    </span>
-                    <button className="btn btn-outline-light" onClick={handleLogout}>Cerrar sesión</button>
-                </div>
+                    <div className="nav__user">
+                        <span className="nav__name">{name}</span>
+                        <span className="nav__role">{ROLE_LABEL[role] || role}</span>
+                        <button className="nav__logout" onClick={handleLogout}>
+                            Cerrar sesión
+                        </button>
+                    </div>
+                </nav>
             </div>
-        </nav>
+        </header>
     );
 }
 

@@ -1,0 +1,114 @@
+.banner {
+    --bg: #dbe5ff;
+    --fg: #1b3a8a;
+
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-block: 1.25rem;
+    padding: 0.9rem 1.1rem;
+    background: var(--bg);
+    color: var(--fg);
+    border-left: 4px solid var(--fg);
+    border-radius: 0 0.6rem 0.6rem 0;
+    font-family: "IBM Plex Sans", system-ui, sans-serif;
+    line-height: 1.45;
+}
+
+.banner--success {
+    --bg: #d5efdf;
+    --fg: #145a3a;
+}
+
+.banner--danger {
+    --bg: #fbdcd9;
+    --fg: #8c1d18;
+}
+
+.banner--warning {
+    --bg: #ffe5bd;
+    --fg: #7a4a00;
+}
+
+.banner--info {
+    --bg: #dbe5ff;
+    --fg: #1b3a8a;
+}
+
+.banner__text {
+    margin: 0;
+}
+
+.banner__close {
+    flex-shrink: 0;
+    font: inherit;
+    font-weight: 500;
+    color: inherit;
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 0.25em;
+}
+
+.banner__close:focus-visible {
+    outline: 3px solid var(--fg);
+    outline-offset: 3px;
+}.banner {
+    --bg: #dbe5ff;
+    --fg: #1b3a8a;
+
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-block: 1.25rem;
+    padding: 0.9rem 1.1rem;
+    background: var(--bg);
+    color: var(--fg);
+    border-left: 4px solid var(--fg);
+    border-radius: 0 0.6rem 0.6rem 0;
+    font-family: "IBM Plex Sans", system-ui, sans-serif;
+    line-height: 1.45;
+}
+
+.banner--success {
+    --bg: #d5efdf;
+    --fg: #145a3a;
+}
+
+.banner--danger {
+    --bg: #fbdcd9;
+    --fg: #8c1d18;
+}
+
+.banner--info {
+    --bg: #dbe5ff;
+    --fg: #1b3a8a;
+}
+
+.banner__text {
+    margin: 0;
+}
+
+.banner__close {
+    flex-shrink: 0;
+    font: inherit;
+    font-weight: 500;
+    color: inherit;
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 0.25em;
+}
+
+.banner__close:focus-visible {
+    outline: 3px solid var(--fg);
+    outline-offset: 3px;
+}

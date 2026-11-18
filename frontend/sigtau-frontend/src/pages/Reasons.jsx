@@ -1,11 +1,17 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import Banner from "../components/Banner";
 import { deleteReason, getReasons } from "../services/reasonService";
+import { getTone, getInitials } from "../utils/careerTone";
+import "./CatalogList.css";
 
 function Reasons() {
     const navigate = useNavigate();
+    const location = useLocation();
     const [reasons, setReasons] = useState([]);
+    // Si venimos de crear o editar un motivo, mostramos su aviso
+    const [msg, setMsg] = useState(location.state?.msg ?? null);
 
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -20,11 +26,11 @@ function Reasons() {
                 setReasons(data);
             } catch (error) {
                 console.error(error);
-                alert("Error al cargar motivos");
+                setMsg({ type: "danger", text: "No se pudieron cargar los motivos. Recarga la página e intenta de nuevo." });
             }
         }
         fetchData();
-    }, []);
+    }, [navigate]);
 
     const handleDelete = async (id) => {
         if (!window.confirm("¿Seguro que desea eliminar este motivo?")) {
@@ -32,65 +38,100 @@ function Reasons() {
         }
         try {
             await deleteReason(id);
-            alert("Motivo eliminado");
-            setReasons(reasons.filter(r => r.id !== id));
+            setReasons(reasons.filter((r) => r.id !== id));
+            setMsg({ type: "success", text: "Motivo eliminado." });
         } catch (error) {
             console.error(error);
-            alert("Error al eliminar el motivo");
+            setMsg({ type: "danger", text: "No se pudo eliminar el motivo. Intenta de nuevo." });
         }
     };
+
+    const total = reasons.length;
 
     return (
         <>
             <Navbar />
-            <div className="container mt-4">
-                <div className="d-flex justify-content-between align-items-center mb-4">
-                    <h2 className="text-primary">Motivos de Cancelación</h2>
-                    <button 
-                        className="btn btn-success"
+            <main className="cl">
+                <header className="cl__header">
+                    <div>
+                        <h1 className="cl__title">Motivos de cancelación</h1>
+                        <p className="cl__count">
+                            {total === 0
+                                ? "Aún no hay motivos registrados"
+                                : total === 1
+                                ? "1 motivo registrado"
+                                : `${total} motivos registrados`}
+                        </p>
+                    </div>
+                    <button
+                        className="cl__create"
                         onClick={() => navigate("/create-reason")}
                     >
-                        + Nuevo Motivo
+                        Nuevo motivo
                     </button>
-                </div>
+                </header>
 
-                {reasons.length === 0 ? (
-                    <div className="alert alert-info text-center">
-                        No hay motivos registrados
-                    </div>
+                <Banner msg={msg} onClose={() => setMsg(null)} />
+
+                {total === 0 ? (
+                    <section className="cl__empty">
+                        <p>Crea el primer motivo para que los estudiantes puedan elegirlo al cancelar.</p>
+                        <button
+                            className="cl__create"
+                            onClick={() => navigate("/create-reason")}
+                        >
+                            Crear motivo
+                        </button>
+                    </section>
                 ) : (
-                    <div className="row row-cols-1 row-cols-md-3 g-4">
-                        {reasons.map(r => (
-                            <div key={r.id} className="col">
-                                <div className="card h-100 shadow-sm">
-                                    <div className="card-body">
-                                        <h5 className="card-title text-primary">{r.name}</h5>
-                                        <p className="card-text">
+                    <ul className="cl__list">
+                        {reasons.map((r) => {
+                            const tone = getTone(r.name);
+                            return (
+                                <li
+                                    key={r.id}
+                                    className="cli"
+                                    style={{ "--tone-bg": tone.bg, "--tone-fg": tone.fg }}
+                                >
+                                    <span className="cli__mark" aria-hidden="true">
+                                        {getInitials(r.name)}
+                                    </span>
+
+                                    <div className="cli__body">
+                                        <h2 className="cli__name">{r.name}</h2>
+                                        <p
+                                            className={
+                                                r.description
+                                                    ? "cli__desc"
+                                                    : "cli__desc cli__desc--empty"
+                                            }
+                                        >
                                             {r.description || "Sin descripción"}
                                         </p>
                                     </div>
-                                    <div className="card-footer bg-white border-top-0">
-                                        <div className="d-flex gap-2">
-                                            <button 
-                                                className="btn btn-primary btn-sm flex-grow-1"
-                                                onClick={() => navigate(`/reasons/edit/${r.id}`)}
-                                            >
-                                                Editar
-                                            </button>
-                                            <button 
-                                                className="btn btn-danger btn-sm flex-grow-1"
-                                                onClick={() => handleDelete(r.id)}
-                                            >
-                                                Eliminar
-                                            </button>
-                                        </div>
+
+                                    <div className="cli__actions">
+                                        <button
+                                            className="cli__btn"
+                                            onClick={() => navigate(`/reasons/edit/${r.id}`)}
+                                            aria-label={`Editar ${r.name}`}
+                                        >
+                                            Editar
+                                        </button>
+                                        <button
+                                            className="cli__btn cli__btn--danger"
+                                            onClick={() => handleDelete(r.id)}
+                                            aria-label={`Eliminar ${r.name}`}
+                                        >
+                                            Eliminar
+                                        </button>
                                     </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+                                </li>
+                            );
+                        })}
+                    </ul>
                 )}
-            </div>
+            </main>
         </>
     );
 }

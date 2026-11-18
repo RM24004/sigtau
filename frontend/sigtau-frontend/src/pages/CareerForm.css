@@ -1,0 +1,230 @@
+.cform {
+    --ink: #14213d;
+    --ink-soft: #55607a;
+    --paper: #f1f4f9;
+    --surface: #ffffff;
+    --line: #c9d1e0;
+
+    font-family: "IBM Plex Sans", system-ui, sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+    min-height: calc(100vh - 56px);
+    padding: clamp(1.5rem, 4vw, 3.5rem) clamp(1rem, 5vw, 4rem) 4rem;
+}
+
+.cform__col {
+    max-width: 56rem;
+    margin-inline: auto;
+}
+
+/* Encabezado */
+.cform__header {
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid var(--ink);
+}
+
+.cform__title {
+    font-family: "Bricolage Grotesque", sans-serif;
+    font-weight: 700;
+    font-size: clamp(2.5rem, 7vw, 4.25rem);
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    margin: 0;
+}
+
+.cform__lead {
+    margin: 0.6rem 0 0;
+    color: var(--ink-soft);
+}
+
+/* Formulario */
+.cform__form {
+    max-width: 36rem;
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+}
+
+.cform__name-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1rem;
+    align-items: end;
+}
+
+.cform__field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.cform__label {
+    font-weight: 500;
+}
+
+.cform__hint {
+    font-weight: 400;
+    color: var(--ink-soft);
+}
+
+.cform__input {
+    font: inherit;
+    color: var(--ink);
+    background: var(--surface);
+    border: 1.5px solid var(--line);
+    border-radius: 0.7rem;
+    padding: 0 1rem;
+    height: 3.5rem;
+    width: 100%;
+}
+
+.cform__input--area {
+    height: auto;
+    padding: 0.9rem 1rem;
+    line-height: 1.5;
+    resize: vertical;
+}
+
+.cform__input::placeholder {
+    color: #8a93a8;
+}
+
+.cform__input:focus {
+    outline: none;
+    border-color: var(--ink);
+    box-shadow: 0 0 0 3px rgba(43, 92, 255, 0.25);
+}
+
+/* Vista previa del monograma (igual que en la lista) */
+.cform__mark {
+    display: grid;
+    place-items: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 0.9rem;
+    background: var(--tone-bg, #e3e8f1);
+    color: var(--tone-fg, #55607a);
+    font-family: "Bricolage Grotesque", sans-serif;
+    font-weight: 700;
+    font-size: 1.25rem;
+}
+
+/* Acciones */
+.cform__actions {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-top: 0.5rem;
+}
+
+.cform__submit {
+    font: inherit;
+    font-weight: 500;
+    background: var(--ink);
+    color: #fff;
+    border: 0;
+    border-radius: 999px;
+    padding: 0.8rem 1.75rem;
+    cursor: pointer;
+}
+
+.cform__submit:hover:not(:disabled) {
+    background: #26365e;
+}
+
+.cform__submit:disabled {
+    opacity: 0.6;
+    cursor: progress;
+}
+
+.cform__cancel {
+    font: inherit;
+    font-weight: 500;
+    color: var(--ink);
+    background: none;
+    border: 0;
+    padding: 0.25rem 0;
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 0.25em;
+    text-decoration-color: var(--line);
+}
+
+.cform__cancel:hover {
+    text-decoration-color: currentColor;
+}
+
+.cform button:focus-visible {
+    outline: 3px solid #2b5cff;
+    outline-offset: 3px;
+}
+
+/* Grupo de campos (fieldset) sin el aspecto por defecto del navegador */
+.cform__set {
+    border: 0;
+    margin: 0;
+    padding: 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+}
+
+.cform__input:disabled {
+    background: #e9edf4;
+    color: var(--ink-soft);
+    cursor: not-allowed;
+}
+
+.cform__status {
+    margin: 1.5rem 0 0;
+    color: var(--ink-soft);
+}
+
+/* Formularios largos: más ancho, secciones y filas de varias columnas */
+.cform__form--wide {
+    max-width: 44rem;
+}
+
+.cform__section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.cform__section + .cform__section {
+    padding-top: 1.75rem;
+    border-top: 1px solid var(--line);
+}
+
+.cform__section-title {
+    font-family: "Bricolage Grotesque", sans-serif;
+    font-weight: 700;
+    font-size: 1.3rem;
+    letter-spacing: -0.015em;
+    margin: 0;
+}
+
+.cform__row {
+    display: grid;
+    gap: 1.25rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.cform__row--3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.cform__row--wide-narrow {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+}
+
+@media (max-width: 600px) {
+    .cform__row,
+    .cform__row--3,
+    .cform__row--wide-narrow {
+        grid-template-columns: 1fr;
+    }
+}

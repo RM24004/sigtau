@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { register } from "../services/authService";
 import Banner from "../components/Banner";
+import AuthBrand from "../components/AuthBrand";
+import "./Login.css";
 
 /** Registro público: siempre crea un ESTUDIANTE (el rol lo fija el servidor). */
 function Register() {
@@ -15,15 +17,17 @@ function Register() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (form.password !== form.confirm) {
-            setMsg({ type: "danger", text: "Las contraseñas no coinciden" });
+            setMsg({ type: "danger", text: "Las contraseñas no coinciden." });
             return;
         }
         setLoading(true);
+        setMsg(null);
         try {
             const { name, email, phone, password } = form;
             await register({ name, email, phone, password });
-            alert("Registro exitoso. Ya puedes iniciar sesión.");
-            navigate("/login");
+            navigate("/login", {
+                state: { msg: { type: "success", text: "Registro exitoso. Ya puedes iniciar sesión." } },
+            });
         } catch (error) {
             setMsg({ type: "danger", text: error.message });
         } finally {
@@ -32,45 +36,96 @@ function Register() {
     };
 
     return (
-        <div className="min-vh-100 d-flex align-items-center justify-content-center py-5">
-            <div className="col-12 col-md-6 col-lg-4">
-                <div className="card shadow-lg">
-                    <div className="card-header bg-primary text-white text-center py-3">
-                        <h4 className="mb-0">SIGTAU · Registro de estudiante</h4>
+        <div className="login">
+            <AuthBrand />
+
+            <main className="login__panel">
+                <form className="login__form" onSubmit={handleSubmit}>
+                    <h1 className="login__title">Crear cuenta</h1>
+                    <p className="login__lead">Regístrate como estudiante para inscribirte en tutorías.</p>
+
+                    <Banner msg={msg} onClose={() => setMsg(null)} />
+
+                    <div className="login__field">
+                        <label className="login__label" htmlFor="reg-name">Nombre completo</label>
+                        <input
+                            id="reg-name"
+                            className="login__input"
+                            autoComplete="name"
+                            value={form.name}
+                            onChange={set("name")}
+                            maxLength={100}
+                            required
+                        />
                     </div>
-                    <form className="card-body p-4" onSubmit={handleSubmit}>
-                        <Banner msg={msg} onClose={() => setMsg(null)} />
-                        <div className="mb-3">
-                            <label className="form-label fw-semibold">Nombre completo</label>
-                            <input className="form-control" value={form.name} onChange={set("name")} maxLength={100} required />
-                        </div>
-                        <div className="mb-3">
-                            <label className="form-label fw-semibold">Correo electrónico</label>
-                            <input type="email" className="form-control" value={form.email} onChange={set("email")} required />
-                        </div>
-                        <div className="mb-3">
-                            <label className="form-label fw-semibold">Teléfono</label>
-                            <input className="form-control" value={form.phone} onChange={set("phone")} maxLength={20} required />
-                        </div>
-                        <div className="mb-3">
-                            <label className="form-label fw-semibold">Contraseña</label>
-                            <input type="password" className="form-control" value={form.password} onChange={set("password")} minLength={6} maxLength={64} required />
-                        </div>
-                        <div className="mb-4">
-                            <label className="form-label fw-semibold">Confirmar contraseña</label>
-                            <input type="password" className="form-control" value={form.confirm} onChange={set("confirm")} required />
-                        </div>
-                        <div className="d-grid">
-                            <button className="btn btn-primary" disabled={loading}>
-                                {loading ? "Registrando..." : "Crear cuenta"}
-                            </button>
-                        </div>
-                        <p className="text-center text-muted mt-3 mb-0">
-                            ¿Ya tienes cuenta? <Link to="/login">Inicia sesión</Link>
-                        </p>
-                    </form>
-                </div>
-            </div>
+
+                    <div className="login__field">
+                        <label className="login__label" htmlFor="reg-email">Correo electrónico</label>
+                        <input
+                            id="reg-email"
+                            type="email"
+                            className="login__input"
+                            placeholder="correo@ejemplo.com"
+                            autoComplete="email"
+                            value={form.email}
+                            onChange={set("email")}
+                            required
+                        />
+                    </div>
+
+                    <div className="login__field">
+                        <label className="login__label" htmlFor="reg-phone">Teléfono</label>
+                        <input
+                            id="reg-phone"
+                            type="tel"
+                            className="login__input"
+                            autoComplete="tel"
+                            value={form.phone}
+                            onChange={set("phone")}
+                            maxLength={20}
+                            required
+                        />
+                    </div>
+
+                    <div className="login__field">
+                        <label className="login__label" htmlFor="reg-password">Contraseña</label>
+                        <input
+                            id="reg-password"
+                            type="password"
+                            className="login__input"
+                            autoComplete="new-password"
+                            value={form.password}
+                            onChange={set("password")}
+                            minLength={6}
+                            maxLength={64}
+                            required
+                        />
+                        <span className="login__hint">Mínimo 6 caracteres.</span>
+                    </div>
+
+                    <div className="login__field">
+                        <label className="login__label" htmlFor="reg-confirm">Confirmar contraseña</label>
+                        <input
+                            id="reg-confirm"
+                            type="password"
+                            className="login__input"
+                            autoComplete="new-password"
+                            value={form.confirm}
+                            onChange={set("confirm")}
+                            required
+                        />
+                    </div>
+
+                    <button type="submit" className="login__submit" disabled={loading}>
+                        {loading ? "Registrando…" : "Crear cuenta"}
+                    </button>
+
+                    <p className="login__register">
+                        ¿Ya tienes cuenta?{" "}
+                        <Link to="/login" className="login__link">Inicia sesión</Link>
+                    </p>
+                </form>
+            </main>
         </div>
     );
 }

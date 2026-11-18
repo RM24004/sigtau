@@ -1,0 +1,333 @@
+.tg {
+    --ink: #14213d;
+    --ink-soft: #55607a;
+    --paper: #f1f4f9;
+    --surface: #ffffff;
+    --line: #d8deea;
+
+    font-family: "IBM Plex Sans", system-ui, sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+    min-height: calc(100vh - 56px);
+    padding: clamp(1.5rem, 4vw, 3.5rem) clamp(1rem, 5vw, 4rem) 4rem;
+}
+
+.tg__col {
+    max-width: 72rem;
+    margin-inline: auto;
+}
+
+/* Encabezado */
+.tg__header {
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid var(--ink);
+}
+
+.tg__title {
+    font-family: "Bricolage Grotesque", sans-serif;
+    font-weight: 700;
+    font-size: clamp(2.5rem, 7vw, 4.25rem);
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    margin: 0;
+}
+
+.tg__count {
+    margin: 0.6rem 0 0;
+    color: var(--ink-soft);
+}
+
+/* Barra de filtros */
+.tg__toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 1rem 2rem;
+    margin: 1.5rem 0 2rem;
+}
+
+.tg__search {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    flex: 1 1 18rem;
+    max-width: 28rem;
+}
+
+.tg__search label {
+    font-weight: 500;
+}
+
+.tg__search input {
+    font: inherit;
+    color: var(--ink);
+    background: var(--surface);
+    border: 1.5px solid #c9d1e0;
+    border-radius: 0.7rem;
+    height: 3rem;
+    padding: 0 1rem;
+}
+
+.tg__search input:focus {
+    outline: none;
+    border-color: var(--ink);
+    box-shadow: 0 0 0 3px rgba(43, 92, 255, 0.25);
+}
+
+.tg__check {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    height: 3rem;
+    cursor: pointer;
+}
+
+.tg__check input {
+    width: 1.15rem;
+    height: 1.15rem;
+    accent-color: var(--ink);
+}
+
+/* Cuadrícula */
+.tg__grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
+    gap: 1.25rem;
+}
+
+.tg__card {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1.4rem;
+    background: var(--surface);
+    border: 1.5px solid var(--line);
+    border-radius: 1.1rem;
+}
+
+.tg__head {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+/* Ficha de fecha: mismo lenguaje que los monogramas del resto de la app */
+.tg__date {
+    flex-shrink: 0;
+    width: 4.25rem;
+    padding: 0.55rem 0;
+    border-radius: 0.9rem;
+    background: var(--tone-bg);
+    color: var(--tone-fg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1;
+}
+
+.tg__weekday,
+.tg__month {
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.tg__day {
+    font-family: "Bricolage Grotesque", sans-serif;
+    font-weight: 700;
+    font-size: 1.9rem;
+    letter-spacing: -0.03em;
+    margin: 0.2rem 0;
+}
+
+.tg__head-text {
+    min-width: 0;
+}
+
+.tg__mode {
+    display: inline-block;
+    margin: 0 0 0.4rem;
+    padding: 0.1rem 0.6rem;
+    font-size: 0.82rem;
+    color: var(--ink-soft);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+}
+
+.tg__card-title {
+    font-family: "Bricolage Grotesque", sans-serif;
+    font-weight: 700;
+    font-size: 1.3rem;
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+    margin: 0;
+}
+
+.tg__subject {
+    margin: 0.35rem 0 0;
+    font-size: 0.92rem;
+    font-weight: 500;
+    color: var(--tone-fg);
+}
+
+.tg__desc {
+    margin: 0;
+    color: var(--ink-soft);
+    line-height: 1.5;
+    font-size: 0.95rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Datos: etiqueta + valor */
+.tg__facts {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    font-size: 0.95rem;
+}
+
+.tg__facts > div {
+    display: grid;
+    grid-template-columns: 4.5rem 1fr;
+    gap: 0.5rem;
+}
+
+.tg__facts dt {
+    color: var(--ink-soft);
+}
+
+.tg__facts dd {
+    margin: 0;
+    font-weight: 500;
+    overflow-wrap: anywhere;
+}
+
+/* Pie: cupos + acción */
+.tg__foot {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--line);
+}
+
+.tg__spots {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+
+.tg__state {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    color: var(--ink-soft);
+    font-size: 0.95rem;
+}
+
+.tg__state::before {
+    content: "";
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 50%;
+    background: #aab2c5;
+}
+
+.tg__state--on {
+    color: #145a3a;
+    font-weight: 500;
+}
+
+.tg__state--on::before {
+    background: #1f9d62;
+}
+
+.tg__meter {
+    display: block;
+    height: 4px;
+    border-radius: 4px;
+    background: var(--line);
+    overflow: hidden;
+}
+
+.tg__meter > span {
+    display: block;
+    height: 100%;
+    background: var(--ink);
+}
+
+.tg__enroll,
+.tg__enrolled,
+.tg__secondary {
+    font: inherit;
+    font-weight: 500;
+    border-radius: 999px;
+    cursor: pointer;
+}
+
+.tg__enroll {
+    height: 3rem;
+    background: var(--ink);
+    color: #fff;
+    border: 0;
+}
+
+.tg__enroll:hover:not(:disabled) {
+    background: #26365e;
+}
+
+.tg__enroll:disabled {
+    background: #c9d1e0;
+    color: #6b7488;
+    cursor: not-allowed;
+}
+
+.tg__enrolled {
+    height: 3rem;
+    background: #e3f4ea;
+    color: #145a3a;
+    border: 1.5px solid #9fd5b8;
+    cursor: default;
+}
+
+.tg__secondary {
+    background: none;
+    color: var(--ink);
+    border: 1.5px solid var(--ink);
+    padding: 0.65rem 1.4rem;
+}
+
+.tg__secondary:hover {
+    background: var(--ink);
+    color: #fff;
+}
+
+/* Vacío */
+.tg__empty {
+    padding: 2rem 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.25rem;
+}
+
+.tg__empty p {
+    margin: 0;
+    max-width: 26ch;
+    font-family: "Bricolage Grotesque", sans-serif;
+    font-size: 1.75rem;
+    line-height: 1.2;
+}
+
+.tg button:focus-visible,
+.tg input:focus-visible {
+    outline: 3px solid #2b5cff;
+    outline-offset: 3px;
+}
