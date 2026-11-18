@@ -1,11 +1,17 @@
 import { useEffect, useState } from "react";
 import { getCareers, deleteCareer } from "../services/careerService";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import Banner from "../components/Banner";
+import { getTone, getInitials } from "../utils/careerTone";
+import "./CatalogList.css";
 
 function Careers() {
     const navigate = useNavigate();
+    const location = useLocation();
     const [careers, setCareers] = useState([]);
+    // Si venimos de crear o editar una carrera, mostramos su aviso
+    const [msg, setMsg] = useState(location.state?.msg ?? null);
 
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -20,7 +26,7 @@ function Careers() {
                 setCareers(data);
             } catch (error) {
                 console.error(error);
-                alert("Error al cargar carreras");
+                setMsg({ type: "danger", text: "No se pudieron cargar las carreras. Recarga la página e intenta de nuevo." });
             }
         }
         fetchData();
@@ -32,65 +38,100 @@ function Careers() {
         }
         try {
             await deleteCareer(id);
-            alert("Carrera eliminada");
-            setCareers(careers.filter(c => c.id !== id));
+            setCareers(careers.filter((c) => c.id !== id));
+            setMsg({ type: "success", text: "Carrera eliminada." });
         } catch (error) {
             console.error(error);
-            alert("Error al eliminar carrera");
+            setMsg({ type: "danger", text: "No se pudo eliminar la carrera. Intenta de nuevo." });
         }
     };
+
+    const total = careers.length;
 
     return (
         <>
             <Navbar />
-            <div className="container mt-4">
-                <div className="d-flex justify-content-between align-items-center mb-4">
-                    <h2 className="text-primary">Carreras</h2>
-                    <button 
-                        className="btn btn-success"
+            <main className="cl">
+                <header className="cl__header">
+                    <div>
+                        <h1 className="cl__title">Carreras</h1>
+                        <p className="cl__count">
+                            {total === 0
+                                ? "Aún no hay carreras registradas"
+                                : total === 1
+                                ? "1 carrera registrada"
+                                : `${total} carreras registradas`}
+                        </p>
+                    </div>
+                    <button
+                        className="cl__create"
                         onClick={() => navigate("/create-career")}
                     >
-                        + Nueva Carrera
+                        Nueva carrera
                     </button>
-                </div>
+                </header>
 
-                {careers.length === 0 ? (
-                    <div className="alert alert-info text-center">
-                        No hay carreras registradas
-                    </div>
+                <Banner msg={msg} onClose={() => setMsg(null)} />
+
+                {total === 0 ? (
+                    <section className="cl__empty">
+                        <p>Crea la primera carrera para empezar a organizar tu oferta académica.</p>
+                        <button
+                            className="cl__create"
+                            onClick={() => navigate("/create-career")}
+                        >
+                            Crear carrera
+                        </button>
+                    </section>
                 ) : (
-                    <div className="row row-cols-1 row-cols-md-3 g-4">
-                        {careers.map(c => (
-                            <div key={c.id} className="col">
-                                <div className="card h-100 shadow-sm">
-                                    <div className="card-body">
-                                        <h5 className="card-title text-primary">{c.name}</h5>
-                                        <p className="card-text">
+                    <ul className="cl__list">
+                        {careers.map((c) => {
+                            const tone = getTone(c.name);
+                            return (
+                                <li
+                                    key={c.id}
+                                    className="cli"
+                                    style={{ "--tone-bg": tone.bg, "--tone-fg": tone.fg }}
+                                >
+                                    <span className="cli__mark" aria-hidden="true">
+                                        {getInitials(c.name)}
+                                    </span>
+
+                                    <div className="cli__body">
+                                        <h2 className="cli__name">{c.name}</h2>
+                                        <p
+                                            className={
+                                                c.description
+                                                    ? "cli__desc"
+                                                    : "cli__desc cli__desc--empty"
+                                            }
+                                        >
                                             {c.description || "Sin descripción"}
                                         </p>
                                     </div>
-                                    <div className="card-footer bg-white border-top-0">
-                                        <div className="d-flex gap-2">
-                                            <button 
-                                                className="btn btn-primary btn-sm flex-grow-1"
-                                                onClick={() => navigate(`/careers/edit/${c.id}`)}
-                                            >
-                                                Editar
-                                            </button>
-                                            <button 
-                                                className="btn btn-danger btn-sm flex-grow-1"
-                                                onClick={() => handleDelete(c.id)}
-                                            >
-                                                Eliminar
-                                            </button>
-                                        </div>
+
+                                    <div className="cli__actions">
+                                        <button
+                                            className="cli__btn"
+                                            onClick={() => navigate(`/careers/edit/${c.id}`)}
+                                            aria-label={`Editar ${c.name}`}
+                                        >
+                                            Editar
+                                        </button>
+                                        <button
+                                            className="cli__btn cli__btn--danger"
+                                            onClick={() => handleDelete(c.id)}
+                                            aria-label={`Eliminar ${c.name}`}
+                                        >
+                                            Eliminar
+                                        </button>
                                     </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+                                </li>
+                            );
+                        })}
+                    </ul>
                 )}
-            </div>
+            </main>
         </>
     );
 }

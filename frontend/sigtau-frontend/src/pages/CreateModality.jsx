@@ -3,6 +3,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Banner from "../components/Banner";
 import { createModality, getModality, updateModality } from "../services/modalityService";
+import { getTone, getInitials } from "../utils/careerTone";
+import "./CareerForm.css";
 
 export default function CreateModality() {
     const { id } = useParams();
@@ -11,6 +13,10 @@ export default function CreateModality() {
     const [ready, setReady] = useState(!id);
     const [saving, setSaving] = useState(false);
     const [msg, setMsg] = useState(null);
+
+    const trimmed = form.name.trim();
+    const tone = getTone(trimmed);
+
     useEffect(() => {
         if (!id) return;
         let active = true;
@@ -24,40 +30,107 @@ export default function CreateModality() {
         });
         return () => { active = false; };
     }, [id]);
+
     async function submit(event) {
         event.preventDefault();
-        if (!form.name.trim()) {
-            setMsg({ type: "danger", text: "El nombre es obligatorio" });
+        if (!trimmed) {
+            setMsg({ type: "danger", text: "El nombre es obligatorio." });
             return;
         }
         setSaving(true);
+        setMsg(null);
         try {
-            const data = { name: form.name.trim(), description: form.description.trim() };
+            const data = { name: trimmed, description: form.description.trim() };
             if (id) await updateModality(id, data);
             else await createModality(data);
-            navigate("/modalities");
+            navigate("/modalities", {
+                state: {
+                    msg: {
+                        type: "success",
+                        text: id ? "Modalidad actualizada." : "Modalidad creada.",
+                    },
+                },
+            });
         } catch (error) {
             setMsg({ type: "danger", text: error.message });
         } finally { setSaving(false); }
     }
+
     return <>
         <Navbar />
-        <main className="container mt-4" style={{ maxWidth: 600 }}>
-            <h2>{id ? "Editar modalidad" : "Crear modalidad"}</h2>
-            <Banner msg={msg} onClose={() => setMsg(null)} />
-            {!ready && !msg && <p role="status">Cargando...</p>}
-            <form onSubmit={submit} className="card card-body shadow-sm">
-                <fieldset disabled={!ready || saving}>
-                    <label htmlFor="catalog-name" className="form-label">Nombre *</label>
-                    <input id="catalog-name" className="form-control mb-3" required maxLength={100}
-                        value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} />
-                    <label htmlFor="catalog-description" className="form-label">Descripción</label>
-                    <textarea id="catalog-description" className="form-control mb-3" maxLength={255}
-                        value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} />
-                    <button className="btn btn-primary" disabled={saving}>{saving ? "Guardando..." : "Guardar"}</button>
-                </fieldset>
-                <button type="button" className="btn btn-outline-secondary mt-2" onClick={() => navigate("/modalities")}>Cancelar</button>
-            </form>
+        <main className="cform">
+            <div className="cform__col">
+                <header className="cform__header">
+                    <h1 className="cform__title">{id ? "Editar modalidad" : "Nueva modalidad"}</h1>
+                    <p className="cform__lead">
+                        {id
+                            ? "Los cambios se verán en el listado de modalidades."
+                            : "Aparecerá en el listado de modalidades."}
+                    </p>
+                </header>
+
+                <Banner msg={msg} onClose={() => setMsg(null)} />
+                {!ready && !msg && <p className="cform__status" role="status">Cargando…</p>}
+
+                <form onSubmit={submit} className="cform__form">
+                    <fieldset className="cform__set" disabled={!ready || saving}>
+                        <div className="cform__name-row">
+                            <div className="cform__field">
+                                <label htmlFor="catalog-name" className="cform__label">Nombre</label>
+                                <input
+                                    id="catalog-name"
+                                    className="cform__input"
+                                    placeholder="Ej: Presencial"
+                                    required
+                                    maxLength={100}
+                                    value={form.name}
+                                    onChange={e => setForm({ ...form, name: e.target.value })}
+                                />
+                            </div>
+                            <span
+                                className="cform__mark"
+                                style={{ "--tone-bg": tone.bg, "--tone-fg": tone.fg }}
+                                aria-hidden="true"
+                                title="Así se verá en la lista"
+                            >
+                                {trimmed ? getInitials(trimmed) : "?"}
+                            </span>
+                        </div>
+
+                        <div className="cform__field">
+                            <label htmlFor="catalog-description" className="cform__label">
+                                Descripción <span className="cform__hint">(opcional)</span>
+                            </label>
+                            <textarea
+                                id="catalog-description"
+                                className="cform__input cform__input--area"
+                                placeholder="¿En qué consiste esta modalidad?"
+                                rows="4"
+                                maxLength={255}
+                                value={form.description}
+                                onChange={e => setForm({ ...form, description: e.target.value })}
+                            />
+                        </div>
+                    </fieldset>
+
+                    <div className="cform__actions">
+                        <button
+                            type="submit"
+                            className="cform__submit"
+                            disabled={!ready || saving}
+                        >
+                            {saving ? "Guardando…" : id ? "Guardar cambios" : "Crear modalidad"}
+                        </button>
+                        <button
+                            type="button"
+                            className="cform__cancel"
+                            onClick={() => navigate("/modalities")}
+                        >
+                            Cancelar
+                        </button>
+                    </div>
+                </form>
+            </div>
         </main>
     </>;
 }
